@@ -128,18 +128,47 @@ body {
   border-radius: 14px;
 }
 
+/* ================= IMAGE FIX START ================= */
+
+/* Feature & Use Images – Uniform Square */
 .feature-img,
 .use-img {
-  width: 100%;
-  max-width: 120px;
-  border-radius: 12px;
-  margin-bottom: 8px;
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Smooth Hover Effect */
+.feature-img:hover,
+.use-img:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Proper Spacing */
 .feature-box,
 .use-box {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  text-align: center;
 }
+
+/* Mobile Optimization */
+@media (max-width: 576px) {
+  .feature-img,
+  .use-img {
+    width: 110px;
+    height: 110px;
+  }
+}
+
+/* ================= IMAGE FIX END ================= */
+
 
 .trust-strip {
   font-size: 0.9rem;
