@@ -19,6 +19,9 @@
         console.log("Product fetch errro:", e);
     }
 })();
+
+const productUnitPrice = document.querySelector(".product-new-price").textContent
+console.log("productUnitPrice: ", productUnitPrice)
 // ------------------------------------------END------------------------------------------------
 
 // *** Convert the number bangla into english or english into bangla ***
@@ -197,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     modalOpenBtns.forEach(btn => {
         btn.addEventListener('click', async () => {
             const data = await ApiFetch(`${ENV.API_BASE_URL}/api/product-fetch/${ENV.PRODUCT_LANDING_PAGE_ID}`);
-            products = data.data
+            products = data.data[0]
             if (!orderModal) return;
             orderModal.classList.add('show');
             orderModal.style.display = 'block';
