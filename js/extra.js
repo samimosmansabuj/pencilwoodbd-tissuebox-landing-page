@@ -1,6 +1,7 @@
 // ================= GLOBAL VARIABLES =================
 let productUnitPrice = 0; // Number for calculation
 let offerActive = false; // Offer OFF by default
+let productID = 0; // To store fetched product ID for order payload
 
 // ================= UTILITY =================
 function toBanglaNumber(number) {
@@ -32,6 +33,9 @@ async function loadProduct() {
 
         // ✅ Number for calculation
         productUnitPrice = Number(data.discount_price);
+
+        // ✅ Store product ID for order payload
+        productID = data.id;
 
         // Calculate initial summary
         calculateOrder();
@@ -217,7 +221,7 @@ function setupModal() {
                     phone: numberInput.value.trim(),
                     address: addressInput.value.trim(),
                     district: districtSelect.value,
-                    product_id: ENV.PRODUCT_LANDING_PAGE_ID,
+                    product_id: productID,
                     quantity: Number(qtyInput.value),
                     unit_price: productUnitPrice,
                     subtotal,
@@ -228,7 +232,7 @@ function setupModal() {
 
                 // POST to backend
                 try {
-                    const response = await fetch(`${ENV.API_BASE_URL}/api/landing/tissue-box/order/`, {
+                    const response = await fetch(`${ENV.API_BASE_URL}/api/landing-page/order/create/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
