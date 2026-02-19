@@ -19,6 +19,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- English Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
 
   <!-- Bangla Font -->
   <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap"
@@ -39,7 +42,7 @@
   <section class="hero-section text-center">
     <img class="hero-product-img rounded-soft" id="hero-product-img">
     <h1 class="hero-title">
-      ঘরের ডেকোরের অংশ হোক আপনার টিস্যু
+      হোম ডেকোরের অংশ হোক আপনার টিস্যু
     </h1>
     <p class="hero-subtitle">
       লেজার কাট ডিজাইনের গ্লসি কাঠের টিস্যু বক্স হোল্ডার
@@ -70,13 +73,13 @@
         <p>লেজার কাট ফ্লোরাল ডিজাইন</p>
       </div>
       <div class="col-6 col-md-3 feature-box"><img src="images/Glossy burnish.jpg.jpeg" class="feature-img">
-        <p>হালকা গ্লসি বার্নিশ</p>
+        <p>ফার্নিচার গ্রেড লেকার ফিনিশ</p>
       </div>
       <div class="col-6 col-md-3 feature-box"><img src="images/splash proof.jpg.jpeg" class="feature-img">
         <p>পানি প্রতিরোধক</p>
       </div>
       <div class="col-6 col-md-3 feature-box"><img src="images/Dust proof.jpg.jpeg" class="feature-img">
-        <p>ধুলো কম ধরে</p>
+        <p>গ্লসি ফিনিশ তাই ধুলো কম ধরে</p>
       </div>
       <div class="col-6 col-md-3 feature-box"><img src="images/Easy clean.jpg.jpeg" class="feature-img">
         <p>সহজে পরিষ্কার করা যায়</p>
@@ -94,11 +97,17 @@
       <div class="col-6 col-md-3 use-box"><img src="images/dinning-table.jpg.jpeg" class="use-img">
         <p>ডাইনিং টেবিল</p>
       </div>
+      <div class="col-6 col-md-3 use-box"><img src="images/restaurant.jpg.jpeg" class="use-img">
+        <p>বেডসাইড</p>
+      </div>
       <div class="col-6 col-md-3 use-box"><img src="images/office-table.jpg.jpeg" class="use-img">
         <p>অফিস ডেস্ক</p>
       </div>
       <div class="col-6 col-md-3 use-box"><img src="images/restaurant.jpg.jpeg" class="use-img">
         <p>রেস্টুরেন্ট / ক্যাফে</p>
+      </div>
+      <div class="col-6 col-md-3 use-box"><img src="images/restaurant.jpg.jpeg" class="use-img">
+        <p>হসপিটাল</p>
       </div>
     </div>
   </section>
@@ -403,7 +412,12 @@
 
         <!-- Customer Info -->
         <input type="text" id="orderName" class="form-control mb-2" placeholder="আপনার নাম">
+
         <input type="text" id="orderPhoneNumber" class="form-control mb-2" placeholder="মোবাইল নাম্বার">
+
+        <input type="text" id="orderWhatsappNumber" class="form-control mb-2"
+          placeholder="হোয়াটসঅ্যাপ নাম্বার (ঐচ্ছিক)">
+
         <textarea id="orderAddress" class="form-control mb-2" placeholder="বিস্তারিত ঠিকানা"></textarea>
 
         <!-- District -->
@@ -411,24 +425,47 @@
           <option selected disabled value="">জেলা নির্বাচন করুন</option>
         </select>
 
+        <!-- Note -->
+        <textarea id="orderNote" class="form-control mb-2" placeholder="নোট (ঐচ্ছিক)"></textarea>
+
         <!-- Quantity Control -->
-        <label class="mb-1">কোয়ান্টিটি</label>
-        <div class="quantity-box mb-3">
-          <button type="button" id="qtyMinus">-</button>
+        <label class="qty-label">কোয়ান্টিটি</label>
+
+        <div class="quantity-card mb-4">
+          <button type="button" id="qtyMinus" class="qty-btn">−</button>
           <input type="number" id="modalQuantity" value="1" min="1" readonly>
-          <button type="button" id="qtyPlus">+</button>
+          <button type="button" id="qtyPlus" class="qty-btn">+</button>
         </div>
+
+
 
         <!-- Facebook Page, Website, WhatsApp -->
 
         <!-- ORDER SUMMARY -->
         <div class="order-summary-box">
-          <p>সাবটোটাল: <span>৳<span id="summarySub">0</span></span></p>
-          <p>ডিসকাউন্ট: <span>৳<span id="summaryDiscount">0</span></span></p>
-          <p>ডেলিভারি: <span>৳<span id="summaryDelivery">0</span></span></p>
-          <hr>
-          <strong>মোট মূল্য: <span>৳<span id="summaryTotal">0</span></span></strong>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span>৳<span id="summarySub">0</span></span>
+          </div>
+
+          <div class="summary-row discount-row">
+            <span>Discount</span>
+            <span>− ৳<span id="summaryDiscount">0</span></span>
+          </div>
+
+          <div class="summary-row">
+            <span>Delivery Charge</span>
+            <span>৳<span id="summaryDelivery">0</span></span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-row total-row">
+            <span>Total</span>
+            <span>৳<span id="summaryTotal">0</span></span>
+          </div>
         </div>
+
 
         <button class="btn btn-order-lg w-100 mt-3">
           Confirm Order (COD)

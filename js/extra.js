@@ -113,17 +113,30 @@ function calculateOrder() {
     let total = subtotal - discount + delivery;
 
     // Update UI in Bangla
-    summarySubBar.innerText = toBanglaNumber(subtotal);
-    subEl.innerText = toBanglaNumber(subtotal);
-    discountEl.innerText = toBanglaNumber(discount);
-    deliveryEl.innerText = toBanglaNumber(delivery);
-    totalEl.innerText = toBanglaNumber(total);
+    summarySubBar.innerText = subtotal;
+    subEl.innerText = subtotal;
+    discountEl.innerText = discount;
+    deliveryEl.innerText = delivery;
+    totalEl.innerText = total;
 
     // Offer section show/hide
     const offerSection = document.getElementById("offerSection");
     if (offerSection) {
         offerSection.style.display = offerActive ? "block" : "none";
     }
+
+    // Discount row show/hide
+    const discountRow = document.querySelector('.discount-row');
+    if (discountRow) {
+        discountRow.style.display = offerActive ? "flex" : "none";
+    }
+
+    // Scroll hook show/hide
+    const scrollHook = document.querySelector('.scroll-hook');
+    if (scrollHook) {
+        scrollHook.style.display = offerActive ? "block" : "none";
+    }
+
 }
 
 // ================= QUANTITY CONTROL =================
@@ -195,23 +208,25 @@ function setupModal() {
 
                 const nameInput = modal.querySelector('#orderName');
                 const numberInput = modal.querySelector('#orderPhoneNumber');
+                const whatsappInput = modal.querySelector('#orderWhatsappNumber');
                 const addressInput = modal.querySelector('#orderAddress');
                 const districtSelect = modal.querySelector('#deliverydistrict');
+                const noteInput = modal.querySelector('#orderNote');
                 const qtyInput = modal.querySelector('#modalQuantity');
 
                 [nameInput, numberInput, addressInput].forEach(f => f.style.border = '');
 
-                if (!nameInput.value.trim()) { alert("দয়া করে আপনার নাম লিখুন।"); nameInput.style.border='2px solid red'; nameInput.focus(); return; }
-                if (!numberInput.value.trim()) { alert("দয়া করে মোবাইল নাম্বার লিখুন।"); numberInput.style.border='2px solid red'; numberInput.focus(); return; }
-                if (!addressInput.value.trim()) { alert("দয়া করে ঠিকানা লিখুন।"); addressInput.style.border='2px solid red'; addressInput.focus(); return; }
-                if (!districtSelect.value) { alert("দয়া করে জেলা নির্বাচন করুন।"); districtSelect.style.border='2px solid red'; districtSelect.focus(); return; }
+                if (!nameInput.value.trim()) { alert("দয়া করে আপনার নাম লিখুন।"); nameInput.style.border = '2px solid red'; nameInput.focus(); return; }
+                if (!numberInput.value.trim()) { alert("দয়া করে মোবাইল নাম্বার লিখুন।"); numberInput.style.border = '2px solid red'; numberInput.focus(); return; }
+                if (!addressInput.value.trim()) { alert("দয়া করে ঠিকানা লিখুন।"); addressInput.style.border = '2px solid red'; addressInput.focus(); return; }
+                if (!districtSelect.value) { alert("দয়া করে জেলা নির্বাচন করুন।"); districtSelect.style.border = '2px solid red'; districtSelect.focus(); return; }
 
                 const subtotal = productUnitPrice * Number(qtyInput.value);
                 let discount = 0;
                 if (offerActive) {
-                    if (qtyInput.value == 2) discount = Math.round(subtotal*0.10);
-                    else if (qtyInput.value ==3) discount = Math.round(subtotal*0.20);
-                    else if (qtyInput.value >=4) discount = Math.round(subtotal*0.30);
+                    if (qtyInput.value == 2) discount = Math.round(subtotal * 0.10);
+                    else if (qtyInput.value == 3) discount = Math.round(subtotal * 0.20);
+                    else if (qtyInput.value >= 4) discount = Math.round(subtotal * 0.30);
                 }
                 const delivery = (Number(qtyInput.value) >= 4 && offerActive) ? 0 : calculateDeliveryCharge(districtSelect.value);
                 const total = subtotal - discount + delivery;
@@ -219,8 +234,10 @@ function setupModal() {
                 const payload = {
                     name: nameInput.value.trim(),
                     phone: numberInput.value.trim(),
+                    whatsapp_number: whatsappInput.value.trim(),
                     address: addressInput.value.trim(),
                     district: districtSelect.value,
+                    note: noteInput.value.trim(),
                     product_id: productID,
                     quantity: Number(qtyInput.value),
                     unit_price: productUnitPrice,
@@ -266,7 +283,7 @@ function setupModal() {
                         }
                     }, 1000);
 
-                } catch(err) {
+                } catch (err) {
                     alert("Order failed. Please try again.");
                     console.error("Order API error:", err);
                     const btn = e.target;
@@ -280,14 +297,14 @@ function setupModal() {
 
 // ================= INIT =================
 document.addEventListener("DOMContentLoaded", () => {
-    // Permanent font fix for Bangla ১
-    const style = document.createElement('style');
-    style.innerHTML = `
-        body, .product-new-price, #summarySubBar, #summarySub, #summaryDiscount, #summaryDelivery, #summaryTotal {
-            font-family: 'Noto Sans Bengali', sans-serif !important;
-        }
-    `;
-    document.head.appendChild(style);
+    // // Permanent font fix for Bangla ১
+    // const style = document.createElement('style');
+    // style.innerHTML = `
+    //     body, .product-new-price, #summarySubBar, #summarySub, #summaryDiscount, #summaryDelivery, #summaryTotal {
+    //         font-family: 'Noto Sans Bengali', sans-serif !important;
+    //     }
+    // `;
+    // document.head.appendChild(style);
 
     loadProduct();
     loadDistricts();
@@ -296,3 +313,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setupModal();
     calculateOrder(); // initial
 });
+
+
