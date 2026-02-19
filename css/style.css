@@ -1,8 +1,9 @@
 body {
-  font-family: 'Hind Siliguri', 'SolaimanLipi', sans-serif;
+  font-family: 'Hind Siliguri', sans-serif;
   background: #F5E6D3;
   color: #3B2A1A;
 }
+
 
 .scroll-hook {
   background: #EED7B5;
@@ -32,6 +33,7 @@ body {
   font-size: 2rem;
   font-weight: bold;
   color: #8B5A2B;
+  letter-spacing: 1px;
 }
 
 .hero-note {
@@ -377,4 +379,17 @@ body {
 
 .total-row span:last-child {
   font-size: 1.25rem;
+}
+
+/* ================= English Font Styling ================= */
+
+.hero-price,
+.floating-bar strong,
+.btn-order-lg,
+.btn-order-sm,
+.badge,
+.review-rating,
+.free-delivery,
+.offer-discount span {
+  font-family: 'Playfair Display', serif;
 }
