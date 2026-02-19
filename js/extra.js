@@ -195,8 +195,10 @@ function setupModal() {
 
                 const nameInput = modal.querySelector('#orderName');
                 const numberInput = modal.querySelector('#orderPhoneNumber');
+                const whatsappInput = modal.querySelector('#orderWhatsappNumber');
                 const addressInput = modal.querySelector('#orderAddress');
                 const districtSelect = modal.querySelector('#deliverydistrict');
+                const noteInput = modal.querySelector('#orderNote');
                 const qtyInput = modal.querySelector('#modalQuantity');
 
                 [nameInput, numberInput, addressInput].forEach(f => f.style.border = '');
@@ -219,8 +221,10 @@ function setupModal() {
                 const payload = {
                     name: nameInput.value.trim(),
                     phone: numberInput.value.trim(),
+                    whatsapp_number: whatsappInput.value.trim(),
                     address: addressInput.value.trim(),
                     district: districtSelect.value,
+                    note: noteInput.value.trim(),
                     product_id: productID,
                     quantity: Number(qtyInput.value),
                     unit_price: productUnitPrice,

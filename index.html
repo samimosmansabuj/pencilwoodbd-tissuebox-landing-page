@@ -403,7 +403,12 @@
 
         <!-- Customer Info -->
         <input type="text" id="orderName" class="form-control mb-2" placeholder="আপনার নাম">
+
         <input type="text" id="orderPhoneNumber" class="form-control mb-2" placeholder="মোবাইল নাম্বার">
+
+        <input type="text" id="orderWhatsappNumber" class="form-control mb-2"
+          placeholder="হোয়াটসঅ্যাপ নাম্বার (ঐচ্ছিক)">
+
         <textarea id="orderAddress" class="form-control mb-2" placeholder="বিস্তারিত ঠিকানা"></textarea>
 
         <!-- District -->
@@ -411,24 +416,47 @@
           <option selected disabled value="">জেলা নির্বাচন করুন</option>
         </select>
 
+        <!-- Note -->
+        <textarea id="orderNote" class="form-control mb-2" placeholder="নোট (ঐচ্ছিক)"></textarea>
+
         <!-- Quantity Control -->
-        <label class="mb-1">কোয়ান্টিটি</label>
-        <div class="quantity-box mb-3">
-          <button type="button" id="qtyMinus">-</button>
+        <label class="qty-label">কোয়ান্টিটি</label>
+
+        <div class="quantity-card mb-4">
+          <button type="button" id="qtyMinus" class="qty-btn">−</button>
           <input type="number" id="modalQuantity" value="1" min="1" readonly>
-          <button type="button" id="qtyPlus">+</button>
+          <button type="button" id="qtyPlus" class="qty-btn">+</button>
         </div>
+
+
 
         <!-- Facebook Page, Website, WhatsApp -->
 
         <!-- ORDER SUMMARY -->
         <div class="order-summary-box">
-          <p>সাবটোটাল: <span>৳<span id="summarySub">0</span></span></p>
-          <p>ডিসকাউন্ট: <span>৳<span id="summaryDiscount">0</span></span></p>
-          <p>ডেলিভারি: <span>৳<span id="summaryDelivery">0</span></span></p>
-          <hr>
-          <strong>মোট মূল্য: <span>৳<span id="summaryTotal">0</span></span></strong>
+          <div class="summary-row">
+            <span>সাবটোটাল</span>
+            <span>৳<span id="summarySub">0</span></span>
+          </div>
+
+          <div class="summary-row discount-row">
+            <span>ডিসকাউন্ট</span>
+            <span>− ৳<span id="summaryDiscount">0</span></span>
+          </div>
+
+          <div class="summary-row">
+            <span>ডেলিভারি</span>
+            <span>৳<span id="summaryDelivery">0</span></span>
+          </div>
+
+          <div class="summary-divider"></div>
+
+          <div class="summary-row total-row">
+            <span>মোট মূল্য</span>
+            <span>৳<span id="summaryTotal">0</span></span>
+          </div>
         </div>
+
 
         <button class="btn btn-order-lg w-100 mt-3">
           Confirm Order (COD)
