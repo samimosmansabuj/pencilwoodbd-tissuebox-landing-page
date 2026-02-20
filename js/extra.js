@@ -3,6 +3,7 @@ let productUnitPrice = 0; // Number for calculation
 let offerActive = false; // Offer OFF by default
 let productID = 0; // To store fetched product ID for order payload
 
+
 // ================= UTILITY =================
 function toBanglaNumber(number) {
     const eng = "0123456789";
@@ -23,25 +24,21 @@ async function loadProduct() {
         const response_data = await response.json();
         const data = response_data.data[0];
 
-        // Hero image
         document.getElementById("hero-product-img").src = data.images[0].image;
-
-        // Hero price display in Bangla
         document.querySelectorAll(".product-new-price").forEach(el => {
             el.textContent = toBanglaNumber(Math.floor(data.discount_price));
         });
-
-        // ✅ Number for calculation
         productUnitPrice = Number(data.discount_price);
-
-        // ✅ Store product ID for order payload
         productID = data.id;
 
-        // Calculate initial summary
         calculateOrder();
+
+        document.getElementById("pageLoader").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
 
     } catch (e) {
         console.log("Product fetch error:", e);
+        document.querySelector("#pageLoader p").innerText ="লোড ব্যর্থ হয়েছে। রিফ্রেশ করুন।";
     }
 }
 
@@ -179,6 +176,7 @@ window.disableOffer = disableOffer;
 
 // ================= MODAL OPEN/CLOSE & ORDER =================
 function setupModal() {
+    const WHATSAPP_NUMBER = ENV.WHATSAPP_NUMBER;
     const modal = document.getElementById("orderModal");
     const modalOpenBtns = document.querySelectorAll('.btn-order, .btn-order-sm, .btn-order-lg');
 
@@ -201,7 +199,7 @@ function setupModal() {
             }
         });
 
-        // ✅ Confirm Order button with backend save
+        // Confirm Order button with backend save
         modal.addEventListener('click', async (e) => {
             if (e.target && e.target.matches('.btn-order-lg')) {
                 e.preventDefault();
@@ -265,14 +263,14 @@ function setupModal() {
                         <div style="text-align:center; padding:30px 20px; background:#fff; border-radius:20px;">
                             <h2>ধন্যবাদ!</h2>
                             <p>আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে।</p>
-                            <p>হোমপেজে রিডিরেক্ট হবে <span id="countdown">10</span> সেকেন্ডে...</p>
-                            <a href="https://wa.me/8801775155760" target="_blank" class="btn btn-primary" style="margin-top:20px; display:inline-block;">Contact with WhatsApp</a>
+                            <p>হোমপেজে রিডিরেক্ট হবে <span id="countdown">5</span> সেকেন্ডে...</p>
+                            <a href="https://wa.me/${WHATSAPP_NUMBER}" target="_blank" class="btn btn-primary" style="margin-top:20px; display:inline-block;">Contact with WhatsApp</a>
                         </div>
                     `;
 
                     document.body.style.overflow = 'hidden';
 
-                    let countdown = 10;
+                    let countdown = 5;
                     const countdownEl = document.getElementById("countdown");
                     const interval = setInterval(() => {
                         countdown -= 1;
@@ -297,15 +295,6 @@ function setupModal() {
 
 // ================= INIT =================
 document.addEventListener("DOMContentLoaded", () => {
-    // // Permanent font fix for Bangla ১
-    // const style = document.createElement('style');
-    // style.innerHTML = `
-    //     body, .product-new-price, #summarySubBar, #summarySub, #summaryDiscount, #summaryDelivery, #summaryTotal {
-    //         font-family: 'Noto Sans Bengali', sans-serif !important;
-    //     }
-    // `;
-    // document.head.appendChild(style);
-
     loadProduct();
     loadDistricts();
     setupQuantityButtons();
