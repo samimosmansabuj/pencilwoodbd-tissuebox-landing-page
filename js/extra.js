@@ -1,4 +1,5 @@
 // ================= GLOBAL VARIABLES =================
+let productName = "";
 let productUnitPrice = 0; // Number for calculation
 let offerActive = false; // Offer OFF by default
 let productID = 0; // To store fetched product ID for order payload
@@ -28,10 +29,12 @@ async function loadProduct() {
         document.querySelectorAll(".product-new-price").forEach(el => {
             el.textContent = toBanglaNumber(Math.floor(data.discount_price));
         });
+        productName = data.name
         productUnitPrice = Number(data.discount_price);
         productID = data.id;
 
         calculateOrder();
+        FacebookViewContentEvent(productName, productUnitPrice, productID);
 
         document.getElementById("pageLoader").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
@@ -186,6 +189,7 @@ function setupModal() {
             modal.classList.add('show');
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            FacebookAddToCartEvent(productID, productName, productUnitPrice);
         });
     });
 
@@ -199,11 +203,25 @@ function setupModal() {
             }
         });
 
+
+
+        const product_details_for_event_send = function getProductJsonForEventSend(){
+            const qtyInput = modal.querySelector('#modalQuantity');
+            const contents = [];
+            contents.push({
+                id: productID,
+                name: productName,
+                quantity: qtyInput,
+                price: productUnitPrice,
+            });
+            return contents;
+        };
+
         // Confirm Order button with backend save
         modal.addEventListener('click', async (e) => {
             if (e.target && e.target.matches('.btn-order-lg')) {
                 e.preventDefault();
-
+                
                 const nameInput = modal.querySelector('#orderName');
                 const numberInput = modal.querySelector('#orderPhoneNumber');
                 const whatsappInput = modal.querySelector('#orderWhatsappNumber');
@@ -228,6 +246,8 @@ function setupModal() {
                 }
                 const delivery = (Number(qtyInput.value) >= 4 && offerActive) ? 0 : calculateDeliveryCharge(districtSelect.value);
                 const total = subtotal - discount + delivery;
+
+                GAInitiateCheckoutEvent(product_details_for_event_send(), total);
 
                 const payload = {
                     name: nameInput.value.trim(),

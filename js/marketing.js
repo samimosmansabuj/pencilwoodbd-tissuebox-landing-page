@@ -1,95 +1,68 @@
-// ========================== MARKETING JS FOR TISSUE BOX ==========================
+// ==================================================================================================
+// *********//////////====Facebook Pixel and Event Tracking Function=====/////////////***************
 
-// ---------------- Facebook Pixel Functions ----------------
-function FacebookViewContentEvent() {
-    const productPriceEl = document.getElementById("summaryTotal");
-    if (!productPriceEl || typeof fbq !== 'function') return;
-
-    const totalValue = parseFloat(productPriceEl.textContent.replace(/[^0-9.]/g, "")) || 0;
-
+// View Content Event Tracking Function ========== 
+function FacebookViewContentEvent(productName, productPrice, productIds) {
+    if (typeof fbq !== 'function') return;
     fbq('track', 'ViewContent', {
-        content_ids: ["tissuebox-001"],
-        content_name: "Pencilwood Tissue Box",
+        content_ids: [String(productIds)],
+        content_name: productName,
         content_type: 'product',
-        value: totalValue,
+        value: parseFloat(productPrice || 0),
         currency: 'BDT'
     });
 }
-FacebookViewContentEvent();
-
-function FacebookAddToCartEvent() {
-    const productPriceEl = document.getElementById("summaryTotal");
-    if (!productPriceEl || typeof fbq !== 'function') return;
-
-    const value = parseFloat(productPriceEl.textContent.replace(/[^0-9.]/g, "")) || 0;
-
+function FacebookAddToCartEvent(content_ids, content_name, value) {
+    if (typeof fbq !== 'function') return;
     fbq('track', 'AddToCart', {
-        content_ids: ["tissuebox-001"],
-        content_name: "Pencilwood Tissue Box",
+        content_ids: [String(content_ids)],
+        content_name: content_name,
         content_type: 'product',
         value: value,
         currency: 'BDT'
     });
 }
 
-function FacebookInitiateCheckEvent() {
-    const productPriceEl = document.getElementById("summaryTotal");
-    if (!productPriceEl || typeof fbq !== 'function') return;
+function GAInitiateCheckoutEvent(products, total) {
+    if (!products?.length) return;
+    items = products.map(p => ({
+        item_id: p.id,
+        item_name: p.name,
+        price: parseFloat(p.price),
+        quantity: p.quantity
+    }))
 
-    const value = parseFloat(productPriceEl.textContent.replace(/[^0-9.]/g, "")) || 0;
-    const qty = parseInt(document.getElementById("modalQuantity")?.value) || 1;
-    const subtotal = parseFloat(document.getElementById("summarySub")?.textContent.replace(/[^0-9.]/g, "")) || 0;
+    window.dataLayer = window.dataLayer || [];
 
-    fbq('track', 'InitiateCheckout', {
-        contents: [{
-            id: "tissuebox-001",
-            name: "Pencilwood Tissue Box",
-            quantity: qty,
-            price: subtotal
-        }],
-        content_type: 'product',
-        value: value,
-        currency: 'BDT'
+    window.dataLayer.push({
+        event: "begin_checkout",
+        ecommerce: {
+            currency: "BDT",
+            value: Number(total),
+            items: items
+        }
     });
 }
 
-function FacebookPurchaseEvent() {
-    const productPriceEl = document.getElementById("summaryTotal");
-    if (!productPriceEl || typeof fbq !== 'function') return;
+function GAInitiatePurchaseEvent(products, total) {
+    if (!products?.length) return;
+    const items = products.map(p => ({
+        item_id: p.id,
+        item_name: p.name,
+        price: parseFloat(p.price),
+        quantity: p.quantity
+    }));
 
-    const totalValue = parseFloat(productPriceEl.textContent.replace(/[^0-9.]/g, "")) || 0;
-    const qty = parseInt(document.getElementById("modalQuantity")?.value) || 1;
-    const subtotal = parseFloat(document.getElementById("summarySub")?.textContent.replace(/[^0-9.]/g, "")) || 0;
-
-    fbq('track', 'Purchase', {
-        value: totalValue,
-        currency: 'BDT',
-        contents: [{
-            id: "tissuebox-001",
-            name: "Pencilwood Tissue Box",
-            quantity: qty,
-            price: subtotal
-        }],
-        content_type: 'product',
-        compared_product: 'recommended-banner-tissue',
-        delivery_category: 'home_delivery'
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+        event: "purchase",
+        ecommerce: {
+            currency: "BDT",
+            value: Number(total),
+            items: items
+        },
     });
 }
 
-// ---------------- Event Hooks ----------------
-document.querySelectorAll(".btn-order, .btn-order-sm, .btn-order-lg").forEach(btn => {
-    btn.addEventListener("click", () => {
-        FacebookAddToCartEvent();
-    });
-});
-
-const orderFormBtn = document.querySelector("#orderModal .btn-order-lg");
-if (orderFormBtn) {
-    orderFormBtn.addEventListener("click", () => {
-        FacebookInitiateCheckEvent();
-
-        setTimeout(() => {
-            FacebookPurchaseEvent();
-        }, 2000);
-    });
-}
+// *********//////////=========================/////////////***************
+// =========================================================================
