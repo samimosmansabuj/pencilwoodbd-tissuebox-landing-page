@@ -206,7 +206,7 @@ function setupModal() {
 
 
         const product_details_for_event_send = function getProductJsonForEventSend(){
-            const qtyInput = modal.querySelector('#modalQuantity');
+            const qtyInput = modal.querySelector('#modalQuantity').value;
             const contents = [];
             contents.push({
                 id: productID,
@@ -247,7 +247,8 @@ function setupModal() {
                 const delivery = (Number(qtyInput.value) >= 4 && offerActive) ? 0 : calculateDeliveryCharge(districtSelect.value);
                 const total = subtotal - discount + delivery;
 
-                GAInitiateCheckoutEvent(product_details_for_event_send(), total);
+                // GAInitiateCheckoutEvent(product_details_for_event_send(), total);
+                FacebookInitiateCheckEvent(product_details_for_event_send(), total);
 
                 const payload = {
                     name: nameInput.value.trim(),
@@ -276,6 +277,8 @@ function setupModal() {
                     const result = await response.json();
 
                     if (!response.ok) throw new Error(result.message || 'Order failed');
+
+                    FacebookPurchaseEvent(product_details_for_event_send(), total);
 
                     // Success UI
                     const modalContent = modal.querySelector('.modal-content');
