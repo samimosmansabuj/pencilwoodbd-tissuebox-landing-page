@@ -18,6 +18,17 @@ function toEnglishNumber(number) {
     return number.toString().split("").map(d => eng[bang.indexOf(d)] || d).join("");
 }
 
+// ================= PHONE VALIDATION =================
+function isValidBDPhone(phone) {
+    phone = phone.replace(/\s+/g, "");
+
+    if (phone.startsWith("+8801") && phone.length === 14) return true;
+    if (phone.startsWith("8801") && phone.length === 13) return true;
+    if (phone.startsWith("01") && phone.length === 11) return true;
+
+    return false;
+}
+
 // ================= PRODUCT FETCH =================
 async function loadProduct() {
     try {
@@ -234,6 +245,8 @@ function setupModal() {
 
                 if (!nameInput.value.trim()) { alert("দয়া করে আপনার নাম লিখুন।"); nameInput.style.border = '2px solid red'; nameInput.focus(); return; }
                 if (!numberInput.value.trim()) { alert("দয়া করে মোবাইল নাম্বার লিখুন।"); numberInput.style.border = '2px solid red'; numberInput.focus(); return; }
+                if (!isValidBDPhone(numberInput.value.trim())) {alert("দয়া করে সঠিক বাংলাদেশি মোবাইল নম্বর লিখুন! (01XXXXXXXXX / 8801XXXXXXXXX / +8801XXXXXXXXX)");numberInput.style.border = '2px solid red';numberInput.focus();return;}
+                if (whatsappInput.value.trim() && !isValidBDPhone(whatsappInput.value.trim())) {alert("দয়া করে সঠিক WhatsApp নম্বর লিখুন!");whatsappInput.style.border = '2px solid red';whatsappInput.focus();return; }
                 if (!addressInput.value.trim()) { alert("দয়া করে ঠিকানা লিখুন।"); addressInput.style.border = '2px solid red'; addressInput.focus(); return; }
                 if (!districtSelect.value) { alert("দয়া করে জেলা নির্বাচন করুন।"); districtSelect.style.border = '2px solid red'; districtSelect.focus(); return; }
 
