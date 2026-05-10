@@ -32,11 +32,9 @@ function isValidBDPhone(phone) {
 // ================= PRODUCT FETCH =================
 async function loadProduct() {
     try {
-        const url = `${ENV.API_BASE_URL}/api/products/?landing_page_code=${ENV.PRODUCT_LANDING_PAGE_ID}`;
+        const url = `${ENV.API_BASE_URL}/site/api/landing-page/${ENV.PRODUCT_LANDING_PAGE_ID}/`;
         const response = await fetch(url);
-
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
         const json = await response.json();
 
         // Check structure
@@ -44,7 +42,7 @@ async function loadProduct() {
             throw new Error("No product found for this landing page.");
         }
 
-        const product = json.data[0];
+        const product = json.data.product[0];
 
         // Safe image handling
         const mainImage = product.images && product.images.length > 0 ? product.images[0].image : "/static/default-product.png";
@@ -292,13 +290,21 @@ function setupModal() {
                 // GAInitiateCheckoutEvent(product_details_for_event_send(), total);
                 FacebookInitiateCheckEvent(product_details_for_event_send(), total);
 
+                function getCustomerJSON() {
+                    customer_details = {
+                        name: nameInput.value.trim(),
+                        phone: numberInput.value.trim(),
+                        address: addressInput.value.trim(),
+                        district: districtSelect.value,
+                        note: noteInput.value.trim()
+                    }
+                    return customer_details
+                }
+                const customerData = getCustomerJSON();
+
                 const payload = {
-                    request_id: Date.now().toString(), // idempotency safety
-                    name: nameInput.value.trim(),
-                    phone: numberInput.value.trim(),
-                    address: addressInput.value.trim(),
-                    district: districtSelect.value,
-                    note: noteInput.value.trim(),
+                    request_id: Date.now().toString(),
+                    customer: customerData,
                 
                     items: [
                         {
@@ -310,7 +316,8 @@ function setupModal() {
 
                 // POST to backend
                 try {
-                    const response = await fetch(`${ENV.API_BASE_URL}/api/order/create/`, {
+                    // const response = await fetch(`${ENV.API_BASE_URL}/site/api/landing/order/`, {
+                    const response = await fetch(`${ENV.API_BASE_URL}/site/api/create-order/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
