@@ -3,7 +3,7 @@ let productName = "";
 let productUnitPrice = 0; // Number for calculation
 let offerActive = false; // Offer OFF by default
 let productID = 0; // To store fetched product ID for order payload
-
+let productInventory = 0; // total available stock
 
 // ================= UTILITY =================
 function toBanglaNumber(number) {
@@ -32,27 +32,43 @@ function isValidBDPhone(phone) {
 // ================= PRODUCT FETCH =================
 async function loadProduct() {
     try {
-        const response = await fetch(`${ENV.API_BASE_URL}/api/product-fetch/${ENV.PRODUCT_LANDING_PAGE_ID}`);
-        const response_data = await response.json();
-        const data = response_data.data[0];
+        const url = `${ENV.API_BASE_URL}/api/products/?landing_page_code=${ENV.PRODUCT_LANDING_PAGE_ID}`;
+        const response = await fetch(url);
 
-        document.getElementById("hero-product-img").src = data.images[0].image;
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const json = await response.json();
+
+        // Check structure
+        if (!json.status || !json.data || json.data.length === 0) {
+            throw new Error("No product found for this landing page.");
+        }
+
+        const product = json.data[0];
+
+        // Safe image handling
+        const mainImage = product.images && product.images.length > 0 ? product.images[0].image : "/static/default-product.png";
+        document.getElementById("hero-product-img").src = mainImage;
+
+        const price = product.discount_price || product.price || 0;
         document.querySelectorAll(".product-new-price").forEach(el => {
-            el.textContent = toBanglaNumber(Math.floor(data.discount_price));
+            el.textContent = toBanglaNumber(Math.floor(price));
         });
-        productName = data.name
-        productUnitPrice = Number(data.discount_price);
-        productID = data.id;
 
+        // Globals
+        productName = product.name;
+        productUnitPrice = Number(price);
+        productID = product.id;
+        productInventory = product.inventory_quantity || 0; // API must provide stock
         calculateOrder();
         FacebookViewContentEvent(productName, productUnitPrice, productID);
 
         document.getElementById("pageLoader").style.display = "none";
         document.getElementById("mainContent").style.display = "block";
 
-    } catch (e) {
-        console.log("Product fetch error:", e);
-        document.querySelector("#pageLoader p").innerText ="লোড ব্যর্থ হয়েছে। রিফ্রেশ করুন।";
+    } catch (err) {
+        console.error("Product fetch error:", err);
+        document.querySelector("#pageLoader p").innerText = "লোড ব্যর্থ হয়েছে। রিফ্রেশ করুন। বিস্তারিত: " + err.message;
     }
 }
 
@@ -241,6 +257,19 @@ function setupModal() {
                 const noteInput = modal.querySelector('#orderNote');
                 const qtyInput = modal.querySelector('#modalQuantity');
 
+                // ===== STOCK CHECK =====
+                const qty = Number(qtyInput.value || 1);
+                if (qty > productInventory) {
+                    const modalContent = modal.querySelector('.modal-content');
+                    modalContent.innerHTML = `
+                        <div style="text-align:center; padding:30px 20px; background:#fff; border-radius:20px;">
+                            <h2>দুঃখিত!</h2>
+                            <p>স্টক শেষ। পরে আবার চেষ্টা করুন।</p>
+                        </div>
+                    `;
+                    return; // stop further order processing
+                }
+                
                 [nameInput, numberInput, addressInput].forEach(f => f.style.border = '');
 
                 if (!nameInput.value.trim()) { alert("দয়া করে আপনার নাম লিখুন।"); nameInput.style.border = '2px solid red'; nameInput.focus(); return; }
@@ -264,24 +293,24 @@ function setupModal() {
                 FacebookInitiateCheckEvent(product_details_for_event_send(), total);
 
                 const payload = {
+                    request_id: Date.now().toString(), // idempotency safety
                     name: nameInput.value.trim(),
                     phone: numberInput.value.trim(),
-                    whatsapp_number: whatsappInput.value.trim(),
                     address: addressInput.value.trim(),
                     district: districtSelect.value,
                     note: noteInput.value.trim(),
-                    product_id: productID,
-                    quantity: Number(qtyInput.value),
-                    unit_price: productUnitPrice,
-                    subtotal,
-                    discount,
-                    delivery,
-                    total
+                
+                    items: [
+                        {
+                            product_id: productID,
+                            quantity: Number(qtyInput.value)
+                        }
+                    ]
                 };
 
                 // POST to backend
                 try {
-                    const response = await fetch(`${ENV.API_BASE_URL}/api/landing-page/order/create/`, {
+                    const response = await fetch(`${ENV.API_BASE_URL}/api/order/create/`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
