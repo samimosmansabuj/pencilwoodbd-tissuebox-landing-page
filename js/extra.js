@@ -38,7 +38,12 @@ async function loadProduct() {
         const json = await response.json();
 
         // Check structure
-        if (!json.status || !json.data || json.data.length === 0) {
+        if (
+            !json.status ||
+            !json.data ||
+            !json.data.product ||
+            json.data.product.length === 0
+        ) {
             throw new Error("No product found for this landing page.");
         }
 
@@ -284,11 +289,17 @@ function setupModal() {
                     else if (qtyInput.value == 3) discount = Math.round(subtotal * 0.20);
                     else if (qtyInput.value >= 4) discount = Math.round(subtotal * 0.30);
                 }
+
                 const delivery = (Number(qtyInput.value) >= 4 && offerActive) ? 0 : calculateDeliveryCharge(districtSelect.value);
-                const total = subtotal - discount + delivery;
+
+                // backend compatible total
+                const total = subtotal + delivery;
+
+                // frontend display/event total
+                const displayTotal = subtotal - discount + delivery;
 
                 // GAInitiateCheckoutEvent(product_details_for_event_send(), total);
-                FacebookInitiateCheckEvent(product_details_for_event_send(), total);
+                FacebookInitiateCheckEvent(product_details_for_event_send(), displayTotal);
 
                 function getCustomerJSON() {
                     customer_details = {
@@ -300,18 +311,37 @@ function setupModal() {
                     }
                     return customer_details
                 }
+
                 const customerData = getCustomerJSON();
 
                 const payload = {
-                    request_id: Date.now().toString(),
-                    customer: customerData,
-                
-                    items: [
+
+                    customer: {
+                        name: customerData.name,
+                        phone: customerData.phone,
+                        district: customerData.district,
+                        address: customerData.address,
+                    },
+
+                    products: [
                         {
-                            product_id: productID,
-                            quantity: Number(qtyInput.value)
+                            product_type: "MAIN",
+                            id: productID,
+                            name: productName,
+                            price: productUnitPrice,
+                            quantity: Number(qtyInput.value),
+                            total_amount: subtotal
                         }
-                    ]
+                    ],
+
+                    amount: {
+                        productTotal: subtotal,
+                        deliveryCharge: delivery,
+                        totalAmount: total,
+                    },
+
+                    note: noteInput.value.trim(),
+                    otp_required: false,
                 };
 
                 // POST to backend
@@ -327,7 +357,7 @@ function setupModal() {
 
                     if (!response.ok) throw new Error(result.message || 'Order failed');
 
-                    FacebookPurchaseEvent(product_details_for_event_send(), total);
+                    FacebookPurchaseEvent(product_details_for_event_send(), displayTotal);
 
                     // Success UI
                     const modalContent = modal.querySelector('.modal-content');
