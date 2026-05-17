@@ -50,8 +50,8 @@ async function loadProduct() {
         const product = json.data.product[0];
 
         // Safe image handling
-        const mainImage = product.images && product.images.length > 0 ? product.images[0].image : "/static/default-product.png";
-        document.getElementById("hero-product-img").src = mainImage;
+        // const mainImage = product.images && product.images.length > 0 ? product.images[0].image : "/static/default-product.png";
+        // document.getElementById("hero-product-img").src = mainImage;
 
         const price = product.discount_price || product.price || 0;
         document.querySelectorAll(".product-new-price").forEach(el => {
@@ -78,7 +78,6 @@ async function loadProduct() {
 // ================= DISTRICT LOAD =================
 function loadDistricts() {
     const districtSelect = document.getElementById("deliverydistrict");
-
     fetch('https://bdapi.vercel.app/api/v.1/district')
         .then(response => response.json())
         .then(data => {
